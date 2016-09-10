@@ -13,4 +13,8 @@ object Boot extends App with TestRoute with Logging {
   Http().bindAndHandle(testRoute, "0.0.0.0", 8080).transform(
     binding => log.info(s"REST interface bound to ${binding.localAddress} "), { t => log.error(s"Couldn't bind interface: ${t.getMessage}", t); sys.exit(1) }
   )
+
+  sys.addShutdownHook {
+    println("Received shutdown")
+  }
 }

@@ -14,6 +14,9 @@ dockerBaseImage       := "airdock/oracle-jdk:jdk-1.8"
 defaultLinuxInstallLocation in Docker := s"/opt/${name.value}" // to have consistent directory for files
 
 
+fork in run := true
+fork in Test := true
+
 resolvers += Resolver.jcenterRepo
 
 libraryDependencies ++= {
