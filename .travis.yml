@@ -1,7 +1,10 @@
 language: scala
 scala:
   - 2.11.8
-sudo: false
+script: sbt ++$TRAVIS_SCALA_VERSION compile test docker:publish
+services:
+  - docker
+sudo: required
 cache:
   directories:
     - $HOME/.sbt
