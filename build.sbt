@@ -9,6 +9,11 @@ scalaVersion := "2.11.8"
 enablePlugins(JavaServerAppPackaging)
 enablePlugins(DockerPlugin)
 
+packageName in Docker := "elmarweber/" + name.value
+dockerBaseImage       := "airdock/oracle-jdk:jdk-1.8"
+defaultLinuxInstallLocation in Docker := s"/opt/${name.value}" // to have consistent directory for files
+
+
 resolvers += Resolver.jcenterRepo
 
 libraryDependencies ++= {
