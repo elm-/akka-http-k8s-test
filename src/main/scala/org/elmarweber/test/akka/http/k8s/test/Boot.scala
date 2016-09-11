@@ -22,18 +22,18 @@ object Boot extends App with TestRoute with Logging {
 
   sys.addShutdownHook {
     try {
+      implicit def ec = ExecutionContext.Implicits.global
       log.info("Received shutdown")
-      bindingFuture.flatMap(_.unbind()).onComplete {
-        case Success(_) =>
-          log.info("Unbound port, giving 2 sec grace period for handling open connections")
-          Thread.sleep(2000)
-          log.info("Grace period over, terminating system")
-          val termination = system.terminate()
-          implicit def ec = ExecutionContext.Implicits.global
-          Await.ready(termination, 10.seconds)
-        case Failure(ex) =>
-          log.error("Error during undind", ex)
+      val f = bindingFuture.flatMap(_.unbind())
+      f.onFailure { case ex: Exception =>
+        log.error(s"Error during unbind: ${ex.getMessage}", ex)
       }
+      Await.ready(f, 10.seconds)
+      log.info("Unbound port, giving 5 sec grace period for handling open connections")
+      Thread.sleep(5000)
+      log.info("Grace period over, terminating system")
+      val termination = system.terminate()
+      Await.ready(termination, 10.seconds)
     } catch {
       case e: Exception =>
         println(s"Error During shutdown: ${e.getMessage}")
